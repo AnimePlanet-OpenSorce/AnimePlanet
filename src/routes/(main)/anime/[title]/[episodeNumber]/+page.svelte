@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { urlToHosting } from '$lib/utils/urlToHosting';
 	import type { PageData } from './$types';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
