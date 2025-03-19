@@ -1,19 +1,17 @@
-import { userToGroup } from './index';
-import { uuid } from './utils';
+import { session } from './session';
 import { relations } from 'drizzle-orm';
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { boolean, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
-export const user = sqliteTable('user', {
-	id: uuid().primaryKey(),
-	age: integer({ mode: 'timestamp' }),
+export const user = pgTable('user', {
+	id: uuid().defaultRandom().primaryKey(),
+	age: timestamp(),
 	email: text().unique().notNull(),
 	login: text().unique().notNull(),
 	passwordHash: text().notNull(),
-	admin: integer({ mode: 'boolean' }).default(false)
+	admin: boolean().default(false)
 });
-
 export const userRelations = relations(user, ({ many }) => ({
-	groups: many(userToGroup)
+	sessions: many(session)
 }));
 
 export type User = typeof user.$inferSelect;

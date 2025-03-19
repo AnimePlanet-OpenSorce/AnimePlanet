@@ -1,8 +1,8 @@
-import { tagToAnime } from './index';
+import { tagToAnime } from './relations';
 import { relations } from 'drizzle-orm';
-import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { pgTable, text } from 'drizzle-orm/pg-core';
 
-export const tag = sqliteTable('tag', {
+export const tag = pgTable('tag', {
 	name: text().primaryKey()
 });
 export const tagRelations = relations(tag, ({ many }) => ({
