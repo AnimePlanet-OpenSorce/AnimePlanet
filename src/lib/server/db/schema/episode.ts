@@ -1,7 +1,7 @@
 import { anime } from './anime';
+import { download, video } from './link';
 import { relations } from 'drizzle-orm';
 import { integer, pgTable, text, unique, uuid } from 'drizzle-orm/pg-core';
-import { download, video } from './link';
 
 export const episode = pgTable(
 	'episode',

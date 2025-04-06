@@ -36,7 +36,7 @@ const registerType = type({
 export const actions: Actions = {
 	login: async (event) => {
 		const formData = await event.request.formData();
-		const { data, errors } = validForm(formData, loginType, { debug: true });
+		const { data, errors } = validForm(formData, loginType);
 
 		if (errors) return error(400, errors);
 
@@ -62,7 +62,7 @@ export const actions: Actions = {
 	register: async (event) => {
 		const formData = await event.request.formData();
 
-		const { data, errors } = validForm(formData, registerType, { debug: true });
+		const { data, errors } = validForm(formData, registerType);
 
 		if (errors) return error(400, errors);
 
@@ -81,7 +81,7 @@ export const actions: Actions = {
 			const sessionToken = auth.generateSessionToken();
 			const session = await auth.createSession(sessionToken, user.id);
 			auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
-		} catch (e) {
+		} catch {
 			return error(500, 'DB error');
 		}
 		return redirect(302, '/');

@@ -24,5 +24,6 @@ export const decodeUrl = (encodedUrl: string): string => {
 	unicodeMap.keyToValue.forEach((char, replacement) => {
 		decodedUrl = decodedUrl.split(replacement).join(char);
 	});
+
 	return decodedUrl;
 };

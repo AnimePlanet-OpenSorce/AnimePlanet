@@ -10,7 +10,7 @@ export const video = pgTable('video', {
 	episodeId: uuid()
 		.notNull()
 		.references(() => episode.id, { onDelete: 'cascade' }),
-	url: text().unique().notNull()
+	url: text().notNull()
 });
 export const videoRelations = relations(video, ({ one }) => ({
 	episode: one(episode, { fields: [video.episodeId], references: [episode.id] })
@@ -27,7 +27,7 @@ export const download = pgTable('download', {
 	episodeId: uuid()
 		.notNull()
 		.references(() => episode.id, { onDelete: 'cascade' }),
-	url: text().unique().notNull()
+	url: text().notNull()
 });
 export const downloadRelations = relations(download, ({ one }) => ({
 	episode: one(episode, { fields: [download.episodeId], references: [episode.id] })
