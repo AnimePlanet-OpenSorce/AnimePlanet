@@ -1,17 +1,9 @@
 import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
-import type { Options } from '@node-rs/argon2';
 import { sha256 } from '@oslojs/crypto/sha2';
 import { encodeBase64url, encodeHexLowerCase } from '@oslojs/encoding';
 import type { RequestEvent } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
-
-export const hashSetting: Options = {
-	memoryCost: 19456,
-	timeCost: 2,
-	outputLen: 32,
-	parallelism: 1
-};
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
@@ -30,11 +22,7 @@ export async function createSession(token: string, userId: string) {
 		userId,
 		expiresAt: new Date(Date.now() + DAY_IN_MS * 30)
 	};
-	try {
-		await db.insert(table.session).values(session);
-	} catch (e) {
-		console.log(e);
-	}
+	await db.insert(table.session).values(session);
 	return session;
 }
 
@@ -43,7 +31,7 @@ export async function validateSessionToken(token: string) {
 	const [result] = await db
 		.select({
 			// Adjust user table here to tweak returned data
-			user: table.user,
+			user: { id: table.user.id, username: table.user.username },
 			session: table.session
 		})
 		.from(table.session)

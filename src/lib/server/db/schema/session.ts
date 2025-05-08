@@ -1,13 +1,15 @@
-import { user } from './user';
+import { user } from './index';
 import { relations } from 'drizzle-orm';
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 export const session = pgTable('session', {
-	id: text().primaryKey(),
+	id: uuid().defaultRandom().primaryKey(),
 	userId: uuid()
-		.notNull()
-		.references(() => user.id, { onDelete: 'cascade' }),
-	expiresAt: timestamp().notNull()
+		.references(() => user.id)
+		.notNull(),
+
+	// Auto-gen
+	expiresAt: timestamp({ withTimezone: true, mode: 'date' }).defaultNow()
 });
 export const sessionRelations = relations(session, ({ one }) => ({
 	user: one(user, {
@@ -15,6 +17,3 @@ export const sessionRelations = relations(session, ({ one }) => ({
 		references: [user.id]
 	})
 }));
-
-export type Session = typeof session.$inferSelect;
-export type CreateSession = typeof session.$inferInsert;

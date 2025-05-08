@@ -1,18 +1,19 @@
-import { session } from './session';
+import { userToGroup, session } from './index';
 import { relations } from 'drizzle-orm';
-import { boolean, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, text, uuid, date, pgEnum } from 'drizzle-orm/pg-core';
+
+export const roleEnum = pgEnum('user_role', ['root', 'admin', 'moderator']);
 
 export const user = pgTable('user', {
 	id: uuid().defaultRandom().primaryKey(),
-	age: timestamp(),
-	email: text().unique().notNull(),
-	login: text().unique().notNull(),
+	username: text().notNull().unique(),
 	passwordHash: text().notNull(),
-	admin: boolean().default(false)
+
+	// Optionals
+	age: date(),
+	role: roleEnum()
 });
 export const userRelations = relations(user, ({ many }) => ({
-	sessions: many(session)
+	session: many(session),
+	userToGroup: many(userToGroup)
 }));
-
-export type User = typeof user.$inferSelect;
-export type CreateUser = typeof user.$inferInsert;

@@ -1,7 +1,10 @@
 import { env } from '$env/dynamic/private';
-import * as schema from './schema';
-import { drizzle } from 'drizzle-orm/node-postgres';
+import * as schema from './schema/index';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 
 if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
 
-export const db = drizzle(env.DATABASE_URL, { schema, casing: 'snake_case' });
+const client = postgres(env.DATABASE_URL);
+
+export const db = drizzle(client, { schema, casing: 'snake_case' });

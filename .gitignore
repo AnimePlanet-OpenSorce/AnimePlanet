@@ -7,7 +7,6 @@ node_modules
 .wrangler
 /.svelte-kit
 /build
-src/lib/types/graphql-env.d.ts
 
 # OS
 .DS_Store
@@ -23,12 +22,5 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# SQLite
-*.db
-.drizzle
-
-*storybook.log
-
-src/lib/test_files
-
+# VSCode
 .vscode
