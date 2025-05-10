@@ -5,8 +5,12 @@ import { pgTable, primaryKey, text, uuid } from 'drizzle-orm/pg-core';
 export const tagToSeries = pgTable(
 	'tag_to_series',
 	{
-		tagName: text().references(() => tag.name),
-		seriesId: uuid().references(() => series.id)
+		tagName: text()
+			.references(() => tag.name, { onUpdate: 'cascade' })
+			.notNull(),
+		seriesId: uuid()
+			.references(() => series.id, { onUpdate: 'cascade' })
+			.notNull()
 	},
 	(t) => [primaryKey({ columns: [t.tagName, t.seriesId] })]
 );

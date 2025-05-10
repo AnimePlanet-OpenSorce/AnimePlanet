@@ -5,8 +5,12 @@ import { pgTable, primaryKey, uuid } from 'drizzle-orm/pg-core';
 export const groupToSource = pgTable(
 	'group_to_source',
 	{
-		groupId: uuid().references(() => group.id),
-		sourceId: uuid().references(() => source.id)
+		groupId: uuid()
+			.references(() => group.id, { onUpdate: 'cascade' })
+			.notNull(),
+		sourceId: uuid()
+			.references(() => source.id, { onUpdate: 'cascade' })
+			.notNull()
 	},
 	(t) => [primaryKey({ columns: [t.groupId, t.sourceId] })]
 );

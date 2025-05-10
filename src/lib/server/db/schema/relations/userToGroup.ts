@@ -6,8 +6,12 @@ export const roleInGroupEnum = pgEnum('role_in_group', ['admin', 'mode']);
 
 export const userToGroup = pgTable('user_to_group', {
 	id: uuid().defaultRandom().primaryKey(),
-	userId: uuid().references(() => user.id),
-	groupId: uuid().references(() => group.id),
+	userId: uuid()
+		.references(() => user.id, { onUpdate: 'cascade' })
+		.notNull(),
+	groupId: uuid()
+		.references(() => group.id, { onUpdate: 'cascade' })
+		.notNull(),
 	role: roleInGroupEnum().notNull()
 });
 export const userToGroupRelations = relations(userToGroup, ({ one }) => ({

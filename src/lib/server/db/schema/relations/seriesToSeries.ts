@@ -7,8 +7,12 @@ export const relationTypeEnum = pgEnum('relationType', ['admin', 'mode']);
 export const seriesToSeries = pgTable(
 	'series_to_series',
 	{
-		baseSeriesId: uuid().references(() => series.id),
-		referenceSeriesId: uuid().references(() => series.id),
+		baseSeriesId: uuid()
+			.references(() => series.id, { onUpdate: 'cascade' })
+			.notNull(),
+		referenceSeriesId: uuid()
+			.references(() => series.id, { onUpdate: 'cascade' })
+			.notNull(),
 		relationType: relationTypeEnum().notNull()
 	},
 	(t) => [primaryKey({ columns: [t.baseSeriesId, t.referenceSeriesId] })]
