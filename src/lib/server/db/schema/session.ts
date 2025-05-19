@@ -9,7 +9,7 @@ export const session = pgTable('session', {
 		.notNull(),
 
 	// Auto-gen
-	expiresAt: timestamp({ withTimezone: true, mode: 'date' }).defaultNow()
+	expiresAt: timestamp({ withTimezone: true, mode: 'date' }).notNull()
 });
 export const sessionRelations = relations(session, ({ one }) => ({
 	user: one(user, {
