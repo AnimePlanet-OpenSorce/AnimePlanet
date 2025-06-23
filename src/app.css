@@ -1,2 +1,19 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
+
+@theme {
+	--color-text: #fff;
+}
+
+@utility glow-* {
+	filter: drop-shadow(0px 0px 0.3rem --value(--color- *));
+}
+
+@utility bg-base-* {
+	background-color: --value(--color-neutral- *);
+}
+
+body {
+	color: var(--color-text);
+	@apply bg-base-900;
+}
