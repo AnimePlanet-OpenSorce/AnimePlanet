@@ -9,8 +9,8 @@
 	<div
 		class="h-screen sticky top-0 w-full grid grid-cols-[100%_0] hover:grid-cols-[100%_15vw] grid-rows-[auto_1fr_auto_1fr_auto] transition-all"
 	>
-		<div class="col-start-2 row-start-1 row-end-6 bg-gradient-to-r from-neutral-900 from-15%"></div>
-		<div class="col-start-1 row-start-1 row-end-6 bg-base-900"></div>
+		<div class="col-start-2 row-start-1 row-end-6 bg-gradient-to-r from-base-300 from-15%"></div>
+		<div class="col-start-1 row-start-1 row-end-6 bg-base-300"></div>
 		<a href="/" class="row-start-1 local-subgrid">
 			<Icon
 				icon="lucide:sparkles"
