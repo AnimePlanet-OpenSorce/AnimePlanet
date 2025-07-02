@@ -1,9 +1,11 @@
 <script lang="ts">
-	import AsciiBorder from '$lib/component/Ascii/AsciiBorder/AsciiBorder.svelte';
-	import AsciiFrom from '$lib/component/Form/AsciiForm';
 	import Window from '$lib/component/Window/Window.svelte';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import * as Card from '$lib/components/ui/card/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
+	import { Separator } from '$lib/components/ui/separator/index.js';
 	import type { PageData } from './$types';
-	import Icon from '@iconify/svelte';
 	import { superForm } from 'sveltekit-superforms';
 
 	let { data }: { data: PageData } = $props();
@@ -11,24 +13,57 @@
 	const superform = superForm(data.form);
 </script>
 
-<div class="flex justify-center items-center h-full">
-	<Window title="Register">
-		<!-- <h1></h1> -->
+<div class="h-full flex justify-center items-center">
+	<div class="grid grid-cols-2 w-full max-w-3xl h-[65%] shadow-xl overflow-hidden rounded-2xl">
+		<div class="h-full w-full relative">
+			<img src="/singup.jpg" alt="Login" class="h-full w-full object-cover rounded-l-2xl" />
+			<div class="absolute inset-0 bg-black/20 bg-opacity-10"></div>
+		</div>
 
-		<AsciiFrom {superform} class="contents">
-			<div class="w-full grid grid-cols-2 gap-4 px-4">
-				<div class="flex flex-col">
-					<AsciiFrom.TextField {superform} field="login" placeholder="Login" />
-					<AsciiFrom.TextField {superform} field="email" placeholder="Email" />
-					<AsciiFrom.TextField {superform} field="password" placeholder="Password" />
-
-					<AsciiFrom.DataField {superform} field="age" placeholder="Age" />
-				</div>
-				<AsciiBorder>
-					<div class="flex justify-center items-center h-full">TODO: Profile logo upload</div>
-				</AsciiBorder>
+		<Card.Root class="flex flex-col justify-normal h-full w-full p-8 bg-zinc-900 rounded-l-none ">
+			<div class="pt-12">
+				<Card.Title class="text-2xl font-bold">Create your account</Card.Title>
+				<Card.Description class="pt-2 pb-6 text-gray-500">
+					You arleady have an account?{' '}
+					<a href="/auth/login" class="text-blue-500 hover:underline">Login </a></Card.Description
+				>
 			</div>
-			<button class="btn"> Register </button>
-		</AsciiFrom>
-	</Window>
+
+			<form class="flex flex-col gap-4 pt-0">
+				<div class="grid gap-2">
+					<Label for="nickname">Nickname</Label>
+					<Input id="nickname" type="text" placeholder="Your nickname" required />
+				</div>
+				<div class="grid gap-2">
+					<Label for="email">Email</Label>
+					<Input id="email" type="email" placeholder="m@example.com" required />
+				</div>
+
+				<div class="grid gap-2">
+					<div class="flex items-center">
+						<Label for="password">Password</Label>
+					</div>
+					<Input id="password" type="password" required />
+				</div>
+
+				<div class="grid gap-2">
+					<div class="flex items-center">
+						<Label for="password">Password</Label>
+					</div>
+					<Input id="password" type="password" required />
+				</div>
+
+				<Button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 mt-6">Register</Button>
+
+				<!-- <div class="relative my-6">
+					<div class="absolute inset-0 flex items-center">
+						<div class="w-full border-t border-zinc-600"></div>
+					</div>
+					<div class="relative flex justify-center text-xs uppercase">
+						<span class="bg-zinc-900 px-2 text-slate-400">Or continue with</span>
+					</div>
+				</div> -->
+			</form>
+		</Card.Root>
+	</div>
 </div>

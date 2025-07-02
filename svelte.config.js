@@ -5,7 +5,12 @@ import { mdsvex } from 'mdsvex';
 
 const config = {
 	preprocess: sequence([vitePreprocess(), mdsvex(), preprocessMeltUI()]),
-	kit: { adapter: adapter() },
+	kit: {
+		adapter: adapter(),
+		alias: {
+			'@/*': './path/to/lib/*'
+		}
+	},
 	extensions: ['.svelte', '.svx']
 };
 
