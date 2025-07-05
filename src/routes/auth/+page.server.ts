@@ -8,21 +8,6 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { type } from 'arktype';
 
 export const load: PageServerLoad = async (event) => {
-	const user = await db.query.user.findFirst({
-		with: {
-			groups: {
-				columns: {
-					role: true
-				},
-				with: {
-					group: true
-				}
-			}
-		}
-	});
-
-	console.log(user);
-
 	if (event.locals.user) {
 		return redirect(302, '/');
 	}
@@ -51,7 +36,7 @@ const registerType = type({
 export const actions: Actions = {
 	login: async (event) => {
 		const formData = await event.request.formData();
-		const { data, errors } = await validForm(formData, loginType);
+		const { data, errors } = validForm(formData, loginType);
 
 		if (errors) return error(400, errors);
 
@@ -81,12 +66,15 @@ export const actions: Actions = {
 
 		if (errors) return error(400, errors);
 
-		const passwordHash = await hash(data.password, auth.hashSetting);
+		const { password, ...user_data } = data;
+
+		const passwordHash = await hash(password, auth.hashSetting);
 
 		try {
 			const [user] = await db
 				.insert(table.user)
-				.values({ ...data, passwordHash })
+				.values({ ...user_data, passwordHash })
+				.onConflictDoNothing()
 				.returning();
 			if (!user) throw {};
 
@@ -94,7 +82,7 @@ export const actions: Actions = {
 			const session = await auth.createSession(sessionToken, user.id);
 			auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 		} catch {
-			return error(500, { message: 'An error has occurred' });
+			return error(500, 'DB error');
 		}
 		return redirect(302, '/');
 	},

@@ -1,14 +1,20 @@
-import { user } from './index';
-import { id, uuid } from './utils';
-import { integer, sqliteTable } from 'drizzle-orm/sqlite-core';
+import { user } from './user';
+import { relations } from 'drizzle-orm';
+import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
-export const session = sqliteTable('session', {
-	id: uuid().primaryKey(),
-	userId: id()
+export const session = pgTable('session', {
+	id: text().primaryKey(),
+	userId: uuid()
 		.notNull()
-		.references(() => user.id),
-	expiresAt: integer({ mode: 'timestamp' }).notNull()
+		.references(() => user.id, { onDelete: 'cascade' }),
+	expiresAt: timestamp().notNull()
 });
+export const sessionRelations = relations(session, ({ one }) => ({
+	user: one(user, {
+		fields: [session.userId],
+		references: [user.id]
+	})
+}));
 
 export type Session = typeof session.$inferSelect;
 export type CreateSession = typeof session.$inferInsert;

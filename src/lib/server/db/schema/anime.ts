@@ -1,16 +1,17 @@
-import { episode, tagToAnime } from './index';
-import { uuid } from './utils';
+import { episode } from './episode';
+import { tagToAnime } from './relations';
 import { relations } from 'drizzle-orm';
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { boolean, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
-export const anime = sqliteTable('anime', {
-	id: uuid().primaryKey(),
+export const anime = pgTable('anime', {
+	id: uuid().defaultRandom().primaryKey(),
 	title: text().unique().notNull(),
-	releaseDate: integer({ mode: 'timestamp' }).notNull(),
+	releaseDate: timestamp().notNull(),
 	coverImageUrl: text().notNull(),
-	nsfw: integer({ mode: 'boolean' }).default(false),
+	nsfw: boolean().default(false),
 	malId: integer()
 });
+
 export const animeRelations = relations(anime, ({ many }) => ({
 	episodes: many(episode),
 	tags: many(tagToAnime)

@@ -30,7 +30,11 @@ export async function createSession(token: string, userId: string) {
 		userId,
 		expiresAt: new Date(Date.now() + DAY_IN_MS * 30)
 	};
-	await db.insert(table.session).values(session);
+	try {
+		await db.insert(table.session).values(session);
+	} catch (e) {
+		console.log(e);
+	}
 	return session;
 }
 

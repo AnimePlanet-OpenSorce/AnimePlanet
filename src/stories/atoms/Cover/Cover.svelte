@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { cn } from '$lib/utils/cn';
-	import { encodeUrl } from '$lib/utils/urlReadable';
 	import type { HTMLAnchorAttributes } from 'svelte/elements';
 
 	export interface Props extends HTMLAnchorAttributes {
@@ -18,6 +17,7 @@
 		className
 	)}
 	style="--bg-src: url({img});"
+	data-sveltekit-preload-data="false"
 >
 	{#if title}
 		<div class="grid h-1/3 w-full items-end bg-gradient-to-t from-surface-900 p-1">
