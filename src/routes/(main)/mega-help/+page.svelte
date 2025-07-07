@@ -19,7 +19,10 @@
 	<br />
 
 	<p>
-		Możesz również poprosić o dodanie dodatkowego odtwarzacza na naszym serwerze <a class="anchor" href="https://discord.gg/cQsgvksdhf">
+		Możesz również poprosić o dodanie dodatkowego odtwarzacza na naszym serwerze <a
+			class="anchor"
+			href="https://discord.gg/cQsgvksdhf"
+		>
 			Discord
 		</a>
 	</p>

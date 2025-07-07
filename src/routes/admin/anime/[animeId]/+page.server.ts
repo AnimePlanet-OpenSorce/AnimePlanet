@@ -32,7 +32,7 @@ export const load = (async (event) => {
 
 const linkType = type({
 	episodeId: 'string',
-	url: 'string.url'
+	url: 'string'
 });
 
 const saveType = type({

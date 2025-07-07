@@ -7,18 +7,22 @@ import {
 	tagToAnime,
 	video,
 	type Anime,
-	type CreateLink,
+	type CreateVideo,
+	type CreateDownload,
 	type Episode
 } from '../schema';
 import { episodeDbPrototype, tagToAnimeDbPrototype } from './preFormating';
 import { and, eq, inArray } from 'drizzle-orm';
+import { createRegExp, not, oneOrMore } from 'magic-regexp';
+
+const regEmbed = createRegExp(oneOrMore(not.whitespace).after('src="').before('"'));
 
 type UpdateAnimeById = {
 	animeId: Anime['id'];
 	title: string;
 	tags: string[];
-	embeds?: CreateLink[];
-	downloads?: CreateLink[];
+	embeds?: CreateVideo[];
+	downloads?: CreateDownload[];
 };
 
 export const updateAnimeById = async ({
@@ -48,7 +52,20 @@ export const updateAnimeById = async ({
 		const tagsPrototype = tagToAnimeDbPrototype(animeId, [...tagsToAdd]);
 		if (tagsPrototype.length > 0) await tx.insert(tagToAnime).values(tagsPrototype);
 
-		if (embeds) await tx.insert(video).values(embeds);
+		if (embeds) {
+			embeds = embeds.map((embed) => {
+				if (regEmbed.test(embed.url)) {
+					embed.url = embed.url.match(regEmbed)?.[0] as string;
+
+					return {
+						...embed
+					};
+				} else {
+					return embed;
+				}
+			});
+			await tx.insert(video).values(embeds);
+		}
 		if (downloads) await tx.insert(download).values(downloads);
 	});
 };

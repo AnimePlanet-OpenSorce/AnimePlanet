@@ -63,6 +63,7 @@
 		"drizzle-orm": "^0.40.1",
 		"gql.tada": "^1.8.10",
 		"lucide-svelte": "^0.469.0",
+		"magic-regexp": "^0.10.0",
 		"minisearch": "^7.1.1",
 		"pg": "^8.14.1",
 		"svelte-motion": "^0.12.2",
