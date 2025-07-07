@@ -30,6 +30,17 @@
 </script>
 
 <div class="flex h-full flex-col gap-4">
+	<div class="bg-error-300-700 flex flex-col items-center font-bold">
+		<h1 class="h3">!! Uwaga !!</h1>
+
+		<p class="text-2xl">
+			Napotkałeś limit na mega zobacz co można z tym zrobić. <a
+				class="btn preset-tonal-error my-2"
+				href="/mega-help">kliknij w link</a
+			>
+		</p>
+	</div>
+
 	<h1 class="h5 font-semibold">
 		Oglądasz: <a href="./" class="anchor font-normal">{data.anime?.title}</a>
 	</h1>
