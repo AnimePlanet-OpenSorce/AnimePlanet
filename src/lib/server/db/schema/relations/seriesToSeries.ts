@@ -1,4 +1,4 @@
-import { group, series, user } from '../index';
+import { series } from '../index';
 import { relations } from 'drizzle-orm';
 import { pgEnum, pgTable, primaryKey, uuid } from 'drizzle-orm/pg-core';
 

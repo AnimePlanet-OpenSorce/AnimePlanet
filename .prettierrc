@@ -5,8 +5,8 @@
 	"printWidth": 100,
 	"plugins": [
 		"prettier-plugin-svelte",
-		"prettier-plugin-tailwindcss",
-		"@trivago/prettier-plugin-sort-imports"
+		"@trivago/prettier-plugin-sort-imports",
+		"prettier-plugin-tailwindcss"
 	],
 	"overrides": [
 		{
@@ -15,5 +15,7 @@
 				"parser": "svelte"
 			}
 		}
-	]
+	],
+	"tailwindStylesheet": "./src/app.css",
+	"svelteSortOrder": "options-scripts-markup-styles"
 }
