@@ -1,21 +1,18 @@
-import { source } from './index';
+import { legacyPlayerType_Enum, source } from './index';
 import { relations } from 'drizzle-orm';
 import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
 
-export const player = pgTable('player', {
+export const legacyPlayer = pgTable('legacy_player', {
 	id: uuid().defaultRandom().primaryKey(),
 	sourceId: uuid()
 		.references(() => source.id, { onUpdate: 'cascade' })
 		.notNull(),
-	videoUrl: text().notNull(),
-
-	// Optional
-	audioUrl: text(),
-	subtitlesUrl: text()
+	url: text().notNull(),
+	type: legacyPlayerType_Enum().notNull()
 });
-export const player_Relations = relations(player, ({ one }) => ({
+export const legacyPlayer_Relations = relations(legacyPlayer, ({ one }) => ({
 	source: one(source, {
-		fields: [player.sourceId],
+		fields: [legacyPlayer.sourceId],
 		references: [source.id]
 	})
 }));

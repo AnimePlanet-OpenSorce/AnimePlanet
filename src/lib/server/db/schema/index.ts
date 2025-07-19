@@ -1,10 +1,25 @@
-export * from './user';
-export * from './tag';
-export * from './source';
-export * from './session';
-export * from './series';
-export * from './player';
-export * from './group';
-export * from './episode';
+export * from './enums';
 
-export * from './relations';
+export * from './user';
+export * from './userGlobalRule';
+export * from './userConfig';
+export * from './session';
+
+export * from './series';
+export * from './seriesRelation';
+export * from './tag';
+export * from './tagToSeries';
+
+export * from './episode';
+export * from './comments';
+
+export * from './group';
+export * from './userToGroup';
+
+export * from './source';
+export * from './groupToSource';
+
+export * from './watchHistory';
+
+export * from './player';
+export * from "./legacy_player"

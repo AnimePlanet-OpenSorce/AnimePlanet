@@ -1,32 +1,28 @@
-import { series, source } from './index';
+import { comment, series, source } from './index';
 import { relations } from 'drizzle-orm';
-import { integer, pgEnum, pgTable, text, uuid } from 'drizzle-orm/pg-core';
-
-export const episodeTypeEnum = pgEnum('episode_type', [
-	'episode',
-	'ova',
-	'ona',
-	'special',
-	'movie'
-]);
+import { integer, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 
 export const episode = pgTable('episode', {
 	id: uuid().defaultRandom().primaryKey(),
-	seriesId: uuid().references(() => series.id),
-	type: episodeTypeEnum(),
+	series_id: uuid()
+		.references(() => series.id, { onUpdate: 'cascade' })
+		.notNull(),
+	number: text().notNull(),
 
-	// Optionals
+	// Optional
 	title: text(),
-	number: integer(),
 	description: text(),
 
-	// Mal
-	malId: integer()
+	// MAL
+	mal_id: integer()
 });
-export const episodeRelations = relations(episode, ({ one, many }) => ({
+export const episode_Relations = relations(episode, ({ one, many }) => ({
 	series: one(series, {
-		fields: [episode.seriesId],
+		fields: [episode.series_id],
 		references: [series.id]
 	}),
-	source: many(source)
+
+	comment_s: many(comment),
+
+	source_s: many(source)
 }));
