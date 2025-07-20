@@ -3,7 +3,7 @@
 	import Icon from '@iconify/svelte';
 </script>
 
-<div class="sticky top-0 flex h-screen w-12 flex-col justify-start gap-6 py-4">
+<div class="sticky top-0 flex h-svh w-12 flex-col justify-start gap-6 bg-linear-to-r py-4">
 	<div class="pl-3">
 		<div class="p-1 text-amber-400">
 			<Icon width="null" icon="lucide:moon-star" />
