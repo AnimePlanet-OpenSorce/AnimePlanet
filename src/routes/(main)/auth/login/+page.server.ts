@@ -1,5 +1,6 @@
+import { login } from '$lib/server/auth';
 import type { Actions, PageServerLoad } from './$types';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { type } from 'arktype';
 import { message, superValidate } from 'sveltekit-superforms';
 import { arktype } from 'sveltekit-superforms/adapters';
@@ -16,13 +17,19 @@ export const load = (async () => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-	default: async ({ request }) => {
-		const form = await superValidate(request, arktype(schema));
+	default: async (event) => {
+		const form = await superValidate(event.request, arktype(schema));
 
 		if (!form.valid) return fail(400, { form });
 
-		console.log(form);
+		await login(
+			{
+				username: form.data.login,
+				password: form.data.password
+			},
+			event
+		);
 
-		return;
+		redirect(302, '/');
 	}
 } satisfies Actions;

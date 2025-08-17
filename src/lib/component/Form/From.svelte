@@ -1,7 +1,6 @@
 <script lang="ts" generics="T extends Record<string, unknown>">
-	import type { Snippet } from 'svelte';
 	import type { HTMLFormAttributes } from 'svelte/elements';
-	import { superForm, type SuperForm, type SuperValidated } from 'sveltekit-superforms';
+	import { type SuperForm } from 'sveltekit-superforms';
 
 	type Props = {
 		superform: SuperForm<T>;

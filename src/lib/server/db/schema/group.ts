@@ -1,4 +1,4 @@
-import { groupType_Enum, userToGroup } from './index';
+import { groupToSource, groupType_Enum, seriesToGroup, userToGroup } from './index';
 import { relations } from 'drizzle-orm';
 import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
 
@@ -13,5 +13,7 @@ export const group = pgTable('group', {
 	description: text()
 });
 export const group_Relations = relations(group, ({ many }) => ({
-	userToGroup_s: many(userToGroup)
+	groupToSource_s: many(groupToSource),
+	userToGroup_s: many(userToGroup),
+	seriesToGroup_s: many(seriesToGroup)
 }));

@@ -15,6 +15,7 @@ export * from './comments';
 
 export * from './group';
 export * from './userToGroup';
+export * from './seriesToGroup';
 
 export * from './source';
 export * from './groupToSource';
@@ -22,4 +23,4 @@ export * from './groupToSource';
 export * from './watchHistory';
 
 export * from './player';
-export * from "./legacy_player"
+export * from './legacy_player';

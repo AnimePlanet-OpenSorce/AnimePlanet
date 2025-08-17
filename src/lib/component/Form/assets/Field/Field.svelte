@@ -10,8 +10,6 @@
 	const { superform, field, type = 'text', ...props }: Props = $props();
 
 	const { value, errors, constraints } = formFieldProxy(superform, field);
-
-	$inspect($errors);
 </script>
 
 <label class="floating-label">

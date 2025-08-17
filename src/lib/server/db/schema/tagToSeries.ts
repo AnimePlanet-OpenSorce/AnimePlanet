@@ -3,7 +3,7 @@ import { relations } from 'drizzle-orm';
 import { pgTable, primaryKey, text, uuid } from 'drizzle-orm/pg-core';
 
 export const tagToSeries = pgTable(
-	'tagToSeries',
+	'tag_to_series',
 	{
 		tagName: text()
 			.references(() => tag.name, { onUpdate: 'cascade' })
