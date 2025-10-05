@@ -22,7 +22,7 @@ export function encodeUrl(url: string): string {
 export function decodeUrl(encodedUrl: string): string {
 	let decodedUrl = encodedUrl;
 	unicodeMap.entries().forEach(([char, replacement]) => {
-		decodedUrl = decodedUrl.split(replacement).join(char);
+		decodedUrl = decodedUrl.split(char).join(replacement);
 	});
 
 	return decodedUrl;

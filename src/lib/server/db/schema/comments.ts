@@ -5,7 +5,7 @@ import { pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 export const comment = pgTable(
 	'comment',
 	{
-		userId: uuid()
+		userId: text()
 			.references(() => user.id, { onUpdate: 'cascade' })
 			.notNull(),
 		episodeId: uuid()

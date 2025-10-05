@@ -1,84 +1,129 @@
 <script lang="ts">
-	import { getSeries, type GetSeriesProps } from '$lib/actions/series.remote';
+	import { goto } from '$app/navigation';
+	import { group } from '$lib/actions/group';
+	import { series } from '$lib/actions/series';
+	import { cleanObject } from '$lib/actions/shared';
 	import Cover from '$lib/component/Cover';
-	import FormQuery from '$lib/component/FormQuery';
+	import Form from '$lib/component/Form';
 	import {
 		Enum,
+		seriesGenreEnum,
 		seriesSeasonEnum,
 		seriesTypeEnum,
-		seriesYearEnum,
-		sourceStatusEnum
+		seriesYearEnum
 	} from '$lib/utils/enums';
-	import { tagEnum } from '$lib/utils/enums/tagEnum';
 	import type { PageData } from './$types';
+	import Icon from '@iconify/svelte';
 	import { queryParameters, ssp } from 'sveltekit-search-params';
 
 	let { data }: { data: PageData } = $props();
 
-	let paramsStore = queryParameters({
+	let filtersParams = queryParameters({
 		title: ssp.string(),
-		tag: ssp.array<string>(),
+		genre: ssp.array<string>(),
 		year: ssp.array<string>(),
 		season: ssp.array<string>(),
 		type: ssp.array<string>(),
-		status: ssp.array<string>(),
-		group: ssp.array<string>(),
+		group: ssp.array<string>()
+	});
 
+	let optionsParams = queryParameters({
 		perPage: ssp.number(),
 		page: ssp.number()
 	});
 
-	let params: GetSeriesProps = $derived.by(() => {
-		const { perPage, page, ...filters } = $paramsStore;
+	const paramsStoreReset = () => {
+		goto('?');
+	};
+
+	let params: Parameters<typeof series.get.many>[0] = $derived.by(() => {
 		return {
-			options: cleanObject({
-				perPage,
-				page
-			}),
-			filters: cleanObject(filters)
+			options: cleanObject($optionsParams),
+			filters: cleanObject($filtersParams)
 		};
 	});
+	$inspect(params);
 
-	function cleanObject<T extends object>(obj: T): { [P in keyof T]?: NonNullable<T[P]> } {
-		return Object.fromEntries(Object.entries(obj).filter(([_, value]) => !!value)) as {
-			[P in keyof T]?: NonNullable<T[P]>;
-		};
-	}
-
-	let seriesArray = $derived(getSeries({ ...params }));
+	let series_s = $derived(series.get.many({ ...params }));
 </script>
 
 <div class="flex flex-col gap-12 px-4 py-1">
 	<div class="flex flex-col">
-		<FormQuery>
-			<FormQuery.Field title="Tytuł" icon="lucide:search" name="title" />
+		<Form class="flex gap-4 *:grid *:w-full *:gap-1 **:[h3]:text-2xl **:[h3]:font-bold">
+			<div>
+				<h3>Tytuł</h3>
+				<Form.Field bind:value={$filtersParams.title} placeholder="Dowolny" />
+			</div>
+			<div>
+				<h3>Gatunek</h3>
+				<Form.ComboBox
+					multiple
+					options={seriesGenreEnum}
+					bind:value={$filtersParams.genre}
+					placeholder="Dowolny"
+				/>
+			</div>
+			<div>
+				<h3>Rok</h3>
+				<Form.ComboBox
+					multiple
+					options={seriesYearEnum}
+					bind:value={$filtersParams.year}
+					placeholder="Dowolny"
+				/>
+			</div>
+			<div>
+				<h3>Sezon</h3>
+				<Form.ComboBox
+					multiple
+					options={seriesSeasonEnum}
+					bind:value={$filtersParams.season}
+					placeholder="Dowolny"
+				/>
+			</div>
+		</Form>
+		<Form class="flex gap-4 *:grid *:w-full *:gap-1 **:[h3]:text-2xl **:[h3]:font-bold">
+			<dir>
+				<h3>Typ</h3>
+				<Form.ComboBox
+					multiple
+					options={seriesTypeEnum}
+					bind:value={$filtersParams.type}
+					placeholder="Dowolny"
+				/>
+			</dir>
+			<div>
+				<h3>Grupa</h3>
+				<Form.ComboBox
+					multiple
+					filterFn={async (filter) => {
+						const { data } = await group.get.many({
+							filters: {
+								name: filter
+							}
+						});
 
-			<svelte:boundary>
-				<FormQuery.ComboBox options={await tagEnum()} title="Gatunek" name="tag" />
-
-				{#snippet pending()}
-					<FormQuery.ComboBox options={new Enum()} title="Gatunek" name="" />
-				{/snippet}
-			</svelte:boundary>
-
-			<FormQuery.ComboBox options={seriesYearEnum} title="Rok" name="year" />
-			<FormQuery.ComboBox options={seriesSeasonEnum} title="Sezon" name="season" />
-		</FormQuery>
-		<FormQuery>
-			<FormQuery.ComboBox options={seriesTypeEnum} title="Format" name="type" />
-			<FormQuery.ComboBox options={sourceStatusEnum} title="Status" name="status" />
-			<FormQuery.ComboBox options={new Enum({})} title="Grupa" name="group" />
-
-			<FormQuery.Clear />
-		</FormQuery>
+						return new Enum(Object.fromEntries(data.map((v) => [v.id, v.name])));
+					}}
+					bind:value={$filtersParams.group}
+					placeholder="Dowolny"
+				/>
+			</div>
+			<div class="!w-fit items-end">
+				<button type="button" onclick={paramsStoreReset} class="btn btn-square p-2.5 btn-secondary">
+					<Icon icon="lucide:trash" width="none" class="h-full" />
+				</button>
+			</div>
+			<!-- <Form.Clear /> -->
+		</Form>
 	</div>
 
 	<div class="mx-8 flex flex-wrap gap-8">
-		{#if seriesArray.ready}
-			{#each seriesArray.current as series}
+		{#if series_s.ready}
+			{#each series_s.current.data as series}
 				<Cover {series} />
 			{/each}
-		{:else if seriesArray.loading}
+		{:else if series_s.loading}
 			{#each { length: 50 }}
 				<Cover.Preview />
 			{/each}

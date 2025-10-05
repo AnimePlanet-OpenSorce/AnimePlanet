@@ -1,9 +1,9 @@
 export * from './enums';
 
-export * from './user';
+export * from './auth';
+
 export * from './userGlobalRule';
 export * from './userConfig';
-export * from './session';
 
 export * from './series';
 export * from './seriesRelation';

@@ -7,7 +7,7 @@ export const player = pgTable('player', {
 	sourceId: uuid()
 		.references(() => source.id, { onUpdate: 'cascade' })
 		.notNull(),
-	videoUrl: text().notNull(),
+	torrentUrl: text().notNull(),
 
 	// Optional
 	audioUrl: text(),

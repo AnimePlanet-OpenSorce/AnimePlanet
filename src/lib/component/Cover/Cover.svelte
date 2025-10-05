@@ -20,8 +20,10 @@
 			class="absolute inset-0 h-full w-full object-cover"
 		/>
 	</div>
+
 	<h1 class="line-clamp-2 font-bold">
 		{series.title}
+		<br /> &nbsp; <!-- To jest w tym miejscu by osiągnąć efekt zawsze 2 lini -->
 	</h1>
 	<div class=" mt-auto flex justify-between opacity-60">
 		<div class="flex items-center gap-1">

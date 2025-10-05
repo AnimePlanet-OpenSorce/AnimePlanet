@@ -1,9 +1,9 @@
 import { source, user } from './index';
 import { relations } from 'drizzle-orm';
-import { numeric, pgTable, smallint, uuid } from 'drizzle-orm/pg-core';
+import { numeric, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 
 export const watchHistory = pgTable('watch_history', {
-	userId: uuid()
+	userId: text()
 		.references(() => user.id, { onUpdate: 'cascade' })
 		.notNull(),
 	sourceId: uuid()

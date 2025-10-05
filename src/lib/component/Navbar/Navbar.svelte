@@ -1,9 +1,9 @@
 <script lang="ts">
+	import { getUser } from '$lib/actions/auth.remote';
 	import Link from './assets/Link.svelte';
-	import { getUser } from './server/data.remote';
 	import Icon from '@iconify/svelte';
 
-	const user = getUser();
+	const session = getUser();
 </script>
 
 <div class="sticky top-0 right-0 flex h-svh w-14 flex-col justify-start gap-6 py-4 pr-2">
@@ -27,16 +27,16 @@
 			classClose="hover:bg-transparent hover:animate-pulse hover:scale-125"
 		/>
 
-		{#if user.current !== undefined}
+		{#if session.current !== undefined}
 			<Link href="/settings" icon="lucide:settings" pathnameReg={/\/settings\/?.*/} />
 
-			{@const _user = user.current}
+			{@const { role } = session.current}
 
-			{#if _user.role === 'admin' || _user.role === 'root'}
+			{#if role === 'admin' || role === 'root'}
 				<Link href="/admin" icon="lucide:shield-user" pathnameReg={/\/admin\/?.*/} />
 			{/if}
 
-			{#if _user.role === 'root'}
+			{#if role === 'root'}
 				<Link href="/root" icon="lucide:brick-wall-shield" pathnameReg={/\/root\/?.*/} />
 			{/if}
 		{:else}

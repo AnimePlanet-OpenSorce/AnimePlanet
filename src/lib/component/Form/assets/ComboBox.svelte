@@ -1,4 +1,4 @@
-<script lang="ts" generics="T extends Record<string, unknown>">
+<script lang="ts" generics="TInput extends RemoteFormInput | void, TOutput,">
 	import { cn } from '$lib/utils/cn';
 	import { Enum } from '$lib/utils/enums';
 	import Icon from '@iconify/svelte';
@@ -13,59 +13,108 @@
 		useInteractions,
 		useRole
 	} from '@skeletonlabs/floating-ui-svelte';
-	import type { HTMLInputAttributes } from 'svelte/elements';
+	import type { RemoteForm, RemoteFormInput, RemoteFormIssue } from '@sveltejs/kit';
+	import Fuse from 'fuse.js';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { fade } from 'svelte/transition';
-	import { arrayProxy, type FormPathArrays, type SuperForm } from 'sveltekit-superforms';
+
+	type Prettify<T> = {
+		[K in keyof T]: T[K];
+	} & {};
+
+	type ValueType = string;
+	type Props = Prettify<
+		(
+			| {
+					form: RemoteForm<TInput, TOutput>;
+					field: ReturnType<RemoteForm<TInput, TOutput>['field']>;
+			  }
+			| {
+					form?: undefined;
+					field?: never;
+			  }
+		) &
+			(
+				| {
+						multiple?: false;
+						value?: ValueType | undefined | null;
+				  }
+				| {
+						multiple?: true;
+						value?: ValueType[] | undefined | null;
+				  }
+			) & {
+				filter?: string;
+				placeholder?: string;
+				options?: Enum<string, string>;
+				filterFn?: (filter: string, options: Enum<string, string>) => Promise<Enum<string, string>>;
+			}
+	>;
 
 	let {
-		options = $bindable(new Enum({})),
-		placeholder = 'Dowolny',
-		filter = $bindable(''),
-		superform,
+		form,
 		field,
-		type = 'checkbox',
-		value = $bindable([])
-	}: {
-		options: Enum<string, string>;
-		filter?: string;
-		superform: SuperForm<T>;
-		field: FormPathArrays<T>;
-		type?: 'radio' | 'checkbox';
-		placeholder?: string;
-		value?: string[];
-	} = $props();
+		multiple = false,
+		value = $bindable(multiple ? [] : ''),
+		filter = $bindable(''),
+		placeholder,
+		options = $bindable(new Enum()),
+		filterFn = async (filter: string) => {
+			return filter.length > 0
+				? new Enum(
+						Object.fromEntries(fuse.search(filter).map(({ item }) => [item.key, item.value]))
+					)
+				: options;
+		}
+	}: Props = $props();
 
-	const { values: formValue, errors } = arrayProxy(superform, field);
+	const fuse = new Fuse(
+		options.entries().map(([key, value]) => ({
+			key,
+			value
+		})),
+		{
+			keys: ['key', 'value']
+		}
+	);
 
-	$effect(() => {
-		formValue.set(value as any[]);
+	const visibleOptions = $derived(await filterFn(filter, options));
+
+	let checkedOptions = $derived.by(() => {
+		const _response = new SvelteMap<string, string>();
+		const _value = typeof value === 'string' ? [value] : (value ?? []);
+
+		for (const k of _value) {
+			const v = visibleOptions.getByKey(k);
+
+			if (v) {
+				_response.set(k, v);
+			}
+		}
+
+		return _response;
 	});
-
-	let checkedOptions = $state(new SvelteMap<string, string>());
 	const onCheckboxClick = (
 		target: MouseEvent & {
 			currentTarget: EventTarget & HTMLInputElement;
 		}
 	) => {
-		const value = target.currentTarget.value as string;
+		const checkboxValue = target.currentTarget.value as string;
 
-		if (type === 'checkbox') {
-			if (checkedOptions.has(value)) {
-				checkedOptions.delete(value);
+		if (multiple) {
+			const _value = new Set(typeof value === 'string' ? [value] : value);
+
+			if (_value.has(checkboxValue)) {
+				_value.delete(checkboxValue);
 			} else {
-				checkedOptions.set(value, options.getByKey(value) as string);
+				_value.add(checkboxValue);
 			}
-		} else {
-			checkedOptions.clear();
 
-			checkedOptions.set(value, options.getByKey(value) as string);
+			value = _value.keys().toArray();
+		} else {
+			value = checkboxValue;
 		}
 	};
-
-	$effect(() => {
-		value = checkedOptions.keys().toArray();
-	});
 
 	// State
 	let open = $state(false);
@@ -91,74 +140,101 @@
 	const click = useClick(floating.context);
 	const dismiss = useDismiss(floating.context);
 	const interactions = useInteractions([role, click, dismiss]);
+
+	const issues = $derived.by(() => {
+		if (form && field) {
+			const _issues = form.issues as Record<typeof field, RemoteFormIssue[]>;
+			return _issues[field];
+		}
+	});
 </script>
 
-<select class="hidden" multiple name={field} bind:value>
+<select name={String(field)} {multiple} class="hidden">
 	{#each checkedOptions.keys() as key}
-		<option value={key} selected={true}>{key}</option>
+		<option value={key} selected>{key}</option>
 	{/each}
 </select>
 
-<button
-	type="button"
-	bind:this={floating.elements.reference}
-	{...interactions.getReferenceProps()}
-	class="input w-full cursor-pointer"
->
-	{#if checkedOptions.size > 0}
-		<div class={cn('w-full text-start')}>
-			{#each checkedOptions.values() as value, i}
-				<span>
-					{#if i > 0}, &nbsp;
-					{/if}{value}
+<div class="relative">
+	<label class="floating-label">
+		<button
+			type="button"
+			bind:this={floating.elements.reference}
+			{...interactions.getReferenceProps()}
+			class={cn('input w-full min-w-0 cursor-pointer', {
+				'input-error': Array.isArray(issues)
+			})}
+		>
+			{#if checkedOptions.size > 0}
+				<div class={cn('w-full truncate text-start')}>
+					{#each checkedOptions.values() as value, i}
+						<span class="contents">
+							{#if i > 0}, &nbsp;
+							{/if}{value}
+						</span>
+					{/each}
+				</div>
+			{:else}
+				<div class={cn('w-full text-start text-[--alpha(var(--color-base-content)_/_50%)]')}>
+					{placeholder}
+				</div>
+			{/if}
+			<span class="label">
+				<Icon icon="lucide:arrow-up-down" class="inline text-lg" />
+			</span>
+		</button>
+		{#if checkedOptions.size > 0}
+			<span>{placeholder}</span>
+		{/if}
+	</label>
+	{#if Array.isArray(issues)}
+		<dir class="relative label w-full">
+			&nbsp;
+			<p class="absolute top-0 w-full truncate">{issues}</p>
+		</dir>
+	{/if}
+	{#if open}
+		<div
+			bind:this={floating.elements.floating}
+			style={floating.floatingStyles}
+			{...interactions.getFloatingProps()}
+			class=" z-50 flex w-full flex-col rounded-md bg-base-300 p-4 drop-shadow-lg"
+			transition:fade={{ duration: 200 }}
+		>
+			<label class="input input-sm w-full input-ghost">
+				<span class="label">
+					<Icon icon="lucide:search" class="inline text-lg" />
 				</span>
-			{/each}
-		</div>
-	{:else}
-		<div class={cn('w-full text-start text-[--alpha(var(--color-base-content)_/_50%)]')}>
-			Dowolny
+				<input type="text" bind:value={filter} />
+			</label>
+
+			<div class="divider m-0"></div>
+
+			<div class="flex max-h-40 flex-col overflow-y-scroll">
+				<svelte:boundary>
+					{#each visibleOptions.keys() as key}
+						<label
+							class="flex items-center gap-2 rounded-sm px-2 py-1 hover:bg-[--alpha(var(--color-base-content)_/_15%)]"
+						>
+							<input
+								type={multiple ? 'checkbox' : 'radio'}
+								class={cn({
+									'checkbox checkbox-sm': multiple,
+									'radio radio-sm': !multiple
+								})}
+								value={key}
+								onclick={onCheckboxClick}
+								checked={checkedOptions.has(key)}
+							/>
+
+							<span>{visibleOptions.getByKey(key)}</span>
+						</label>
+					{/each}
+					{#snippet pending()}
+						<div></div>
+					{/snippet}
+				</svelte:boundary>
+			</div>
 		</div>
 	{/if}
-	<span class="label">
-		<Icon icon="lucide:arrow-up-down" class="inline text-lg" />
-	</span>
-</button>
-{#if open}
-	<div
-		bind:this={floating.elements.floating}
-		style={floating.floatingStyles}
-		{...interactions.getFloatingProps()}
-		class=" z-50 flex w-full flex-col rounded-md bg-base-300 p-4"
-		transition:fade={{ duration: 200 }}
-	>
-		<label class="input input-sm w-full input-ghost">
-			<span class="label">
-				<Icon icon="lucide:search" class="inline text-lg" />
-			</span>
-			<input type="text" bind:value={filter} />
-		</label>
-
-		<div class="divider m-0"></div>
-
-		<div class="flex max-h-40 flex-col overflow-y-scroll">
-			{#each options.entries() as [value, body]}
-				<label
-					class="flex items-center gap-2 rounded-sm px-2 py-1 hover:bg-[--alpha(var(--color-base-content)_/_15%)]"
-				>
-					<input
-						{type}
-						class={cn({
-							'checkbox checkbox-sm': type === 'checkbox',
-							'radio radio-sm': type === 'radio'
-						})}
-						{value}
-						onclick={onCheckboxClick}
-						checked={checkedOptions.has(value)}
-					/>
-
-					<span>{body}</span>
-				</label>
-			{/each}
-		</div>
-	</div>
-{/if}
+</div>

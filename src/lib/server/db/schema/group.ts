@@ -4,7 +4,7 @@ import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
 
 export const group = pgTable('group', {
 	id: uuid().defaultRandom().primaryKey(),
-	name: text().notNull(),
+	name: text().unique().notNull(),
 	type: groupType_Enum().notNull(),
 
 	// Optional

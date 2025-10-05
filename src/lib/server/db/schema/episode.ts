@@ -4,21 +4,25 @@ import { integer, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 
 export const episode = pgTable('episode', {
 	id: uuid().defaultRandom().primaryKey(),
-	series_id: uuid()
+	seriesId: uuid()
 		.references(() => series.id, { onUpdate: 'cascade' })
 		.notNull(),
-	number: text().notNull(),
 
+	number: text().notNull(),
+	title: text().notNull(),
+
+	duration: integer().notNull(), // As a minutes
+	
 	// Optional
-	title: text(),
 	description: text(),
+	coverUrl: text(),
 
 	// MAL
-	mal_id: integer()
+	malId: integer()
 });
 export const episode_Relations = relations(episode, ({ one, many }) => ({
 	series: one(series, {
-		fields: [episode.series_id],
+		fields: [episode.seriesId],
 		references: [series.id]
 	}),
 

@@ -1,24 +1,18 @@
 <script lang="ts">
+	import { singUp } from '$lib/actions/auth.remote';
 	import Form from '$lib/component/Form';
-	import type { PageData } from './$types';
-	import Icon from '@iconify/svelte';
-	import { superForm } from 'sveltekit-superforms';
-
-	let { data }: { data: PageData } = $props();
-
-	const superform = superForm(data.form);
 </script>
 
 <div class="card-body gap-2 p-6">
 	<h2 class="card-title">Witamy w HoshiAnime</h2>
 
 	<div class="flex h-full flex-col justify-center">
-		<Form {superform} class="">
+		<Form form={singUp}>
 			<fieldset class="fieldset gap-4">
-				<Form.Field {superform} type="email" field="email" placeholder="Email" />
-				<Form.Field {superform} field="login" placeholder="Login" />
-				<Form.Field.Secret {superform} field="password" placeholder="Hasło" />
-				<Form.Field.Secret {superform} field="confirmPassword" placeholder="Powtórz Hasło" />
+				<Form.Field form={singUp} field="email" type="email" placeholder="Email" />
+				<Form.Field form={singUp} field="name" placeholder="Login" />
+				<Form.Field.Secret form={singUp} field="password" placeholder="Hasło" />
+				<Form.Field.Secret form={singUp} field="confirmPassword" placeholder="Powtórz Hasło" />
 
 				<div class="grid gap-4 sm:grid-cols-2">
 					<button type="submit" class="btn text-nowrap btn-secondary">Zarejestruj się</button>

@@ -1,9 +1,9 @@
 import { content_Enum, user } from './index';
 import { relations } from 'drizzle-orm';
-import { pgTable, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, text } from 'drizzle-orm/pg-core';
 
 export const userConfig = pgTable('user_config', {
-	userId: uuid()
+	userId: text()
 		.primaryKey()
 		.references(() => user.id, { onUpdate: 'cascade' })
 		.notNull(),

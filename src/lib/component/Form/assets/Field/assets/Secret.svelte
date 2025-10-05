@@ -1,40 +1,70 @@
-<script lang="ts" generics="T extends Record<string, unknown>">
+<script lang="ts" generics="TInput extends RemoteFormInput | void, TOutput,">
+	import { cn } from '$lib/utils/cn';
 	import Icon from '@iconify/svelte';
+	import type { RemoteForm, RemoteFormInput, RemoteFormIssue } from '@sveltejs/kit';
 	import type { HTMLInputAttributes } from 'svelte/elements';
-	import { formFieldProxy, type FormPathLeaves, type SuperForm } from 'sveltekit-superforms';
 
-	type Props = HTMLInputAttributes & {
-		superform: SuperForm<T>;
-		field: FormPathLeaves<T>;
+	type Props = {
+		form: RemoteForm<TInput, TOutput>;
+		field: ReturnType<RemoteForm<TInput, TOutput>['field']>;
+	} & {
+		labelClass?: string;
+		class?: string;
+		type?: HTMLInputAttributes['type'];
+		placeholder?: string;
+		value?: HTMLInputAttributes['value'];
 		show?: boolean;
 	};
 
-	let { superform, field, show = $bindable(false), ...props }: Props = $props();
+	let {
+		form,
+		field,
+		labelClass,
+		class: className,
+		type = 'text',
+		show = $bindable(false),
+		placeholder,
+		value = $bindable()
+	}: Props = $props();
 
-	const { value, errors, constraints } = formFieldProxy(superform, field);
-
-	$inspect($errors);
+	const issues = $derived.by(() => {
+		const _issues = form.issues as Record<typeof field, RemoteFormIssue[]>;
+		return _issues[field];
+	});
 </script>
 
-<label class="floating-label">
-	<span>{props.placeholder}</span>
-	<label class="validator input w-full">
+<label class={cn('floating-label', labelClass)}>
+	<label class={cn('validator input w-full min-w-0', className)}>
 		<input
-			name={field}
-			type={show ? 'text' : 'password'}
-			bind:value={$value}
-			aria-invalid={$errors ? 'true' : undefined}
-			{...$constraints}
-			{...props}
+			name={String(field)}
+			type={show ? type : 'password'}
+			{placeholder}
+			aria-invalid={!!issues}
+			bind:value
 		/>
-
-		<button type="button" class="label" onclick={() => (show = !show)}>
-			{#if show}
-				<Icon icon="lucide:eye" />
-			{:else}
-				<Icon icon="lucide:eye-closed" />
-			{/if}
-		</button>
+		<span class="label">
+			<button type="button" onclick={() => (show = !show)}>
+				{#if show}
+					<Icon icon="lucide:eye" />
+				{:else}
+					<Icon icon="lucide:eye-off" />
+				{/if}
+			</button>
+		</span>
 	</label>
-	{#if $errors}<span class="label text-error">{$errors}</span>{/if}
+	<span>
+		{placeholder}
+	</span>
+	{#if issues}
+		<ul class="pl-2">
+			{#each issues as issue}
+				<li>
+					<div aria-label="error" class="status status-error"></div>
+					<span class="label">
+						{issue.message.replace(issue.name, '')}
+					</span>
+				</li>
+			{/each}
+		</ul>
+	{/if}
 </label>

@@ -1,0 +1,1 @@
+export {groupCreate as default} from "./create.remote"

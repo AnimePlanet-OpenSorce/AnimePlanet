@@ -1,24 +1,27 @@
 <script lang="ts">
+	import { cn } from '$lib/utils/cn';
 	import Icon from '@iconify/svelte';
 	import type { Snippet } from 'svelte';
 
 	let {
-		dialog = $bindable({} as HTMLDialogElement),
-		title,
+		dialog = $bindable(),
+		title = '',
 		trigger,
-		children
+		children,
+		classBox
 	}: {
 		dialog?: HTMLDialogElement;
-		title: string;
+		title?: string;
 		trigger?: Snippet<[showModal: HTMLDialogElement['showModal']]>;
 		children?: Snippet;
+		classBox?: string;
 	} = $props();
 </script>
 
-{@render trigger?.(() => dialog.showModal())}
+{@render trigger?.(() => dialog?.showModal())}
 
 <dialog class="modal" bind:this={dialog}>
-	<div class="modal-box overflow-visible">
+	<div class={cn('modal-box overflow-visible', classBox)}>
 		<form method="dialog">
 			<button class="btn absolute top-2 right-2 btn-circle btn-ghost btn-sm">
 				<Icon icon="lucide:x" />

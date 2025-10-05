@@ -1,6 +1,6 @@
-import { group, series } from './index';
+import { group, series, seriesStatus_Enum } from './index';
 import { relations } from 'drizzle-orm';
-import { pgTable, primaryKey, text, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, primaryKey, uuid } from 'drizzle-orm/pg-core';
 
 export const seriesToGroup = pgTable(
 	'series_to_group',
@@ -10,7 +10,8 @@ export const seriesToGroup = pgTable(
 			.notNull(),
 		groupId: uuid()
 			.references(() => group.id, { onUpdate: 'cascade' })
-			.notNull()
+			.notNull(),
+		status: seriesStatus_Enum().notNull()
 	},
 	(t) => [primaryKey({ columns: [t.groupId, t.seriesId] })]
 );

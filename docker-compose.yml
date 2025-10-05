@@ -8,3 +8,21 @@ services:
       POSTGRES_USER: local
       POSTGRES_PASSWORD: local
       POSTGRES_DB: anime-planet
+
+  s3-master:
+    image: chrislusf/seaweedfs # use a remote image
+    ports:
+      - 9333:9333
+      - 19333:19333
+      - 9324:9324
+    command: 'master -ip=s3-master -ip.bind=0.0.0.0 -metricsPort=9324'
+
+  s3-volume:
+    image: chrislusf/seaweedfs # use a remote image
+    ports:
+      - 8080:8080
+      - 18080:18080
+      - 9325:9325
+    command: 'volume -mserver="s3-master:9333" -ip.bind=0.0.0.0 -port=8080  -metricsPort=9325'
+    depends_on:
+      - s3-master

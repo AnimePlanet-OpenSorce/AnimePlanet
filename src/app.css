@@ -8,3 +8,7 @@
 		cupcake --default,
 		/* black --prefersdark; */ dracula --prefersdark;
 }
+
+@utility aspect-cover {
+	aspect-ratio: 37/53;
+}

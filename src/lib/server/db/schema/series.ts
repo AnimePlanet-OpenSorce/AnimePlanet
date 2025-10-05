@@ -1,5 +1,6 @@
 import {
 	episode,
+	seriesGenre_Enum,
 	seriesRelation,
 	seriesSeason_Enum,
 	seriesToGroup,
@@ -11,9 +12,10 @@ import { boolean, date, integer, pgTable, text, timestamp, uuid } from 'drizzle-
 
 export const series = pgTable('series', {
 	id: uuid().defaultRandom().primaryKey(),
-	title: text().notNull(),
+	title: text().unique().notNull(),
 	type: seriesType_Enum().notNull(),
 	coverUrl: text().notNull(),
+	bannerUrl: text().notNull(),
 	nsfw: boolean().notNull(),
 	updateAt: timestamp()
 		.$onUpdate(() => sql`now()`)
@@ -21,12 +23,13 @@ export const series = pgTable('series', {
 
 	year: date({ mode: 'date' }).notNull(),
 	season: seriesSeason_Enum().notNull(),
+	genre_s: seriesGenre_Enum().array().notNull(),
+
+	malId: integer().notNull(),
 
 	// Optional
 	trailerUrl: text(),
-
-	// MAL
-	malId: integer()
+	description: text()
 });
 export const series_Relations = relations(series, ({ many }) => ({
 	seriesRelation_s: many(seriesRelation, { relationName: 'referenceSeries' }),

@@ -1,24 +1,21 @@
 <script lang="ts">
+	import { singIn } from '$lib/actions/auth.remote';
+	import { authClient } from '$lib/auth-client';
 	import Form from '$lib/component/Form';
-	import type { PageData } from './$types';
 	import Icon from '@iconify/svelte';
-	import { superForm } from 'sveltekit-superforms';
-
-	let { data }: { data: PageData } = $props();
-
-	const superform = superForm(data.form);
+	import { onMount } from 'svelte';
 </script>
 
 <div class="card-body gap-2 p-6">
 	<h2 class="card-title">Witamy ponownie w HoshiAnime</h2>
 
 	<div class="flex h-full flex-col justify-center">
-		<Form {superform}>
+		<Form form={singIn}>
 			<fieldset class="fieldset gap-4">
-				<Form.Field {superform} field="login" placeholder="Login" />
-				<Form.Field.Secret {superform} field="password" placeholder="Hasło" />
+				<Form.Field form={singIn} field="email" placeholder="Email" />
+				<Form.Field.Secret form={singIn} field="password" placeholder="Hasło" />
 				<div class="grid gap-4 sm:grid-cols-2">
-					<button class="btn text-nowrap btn-secondary"> Zaloguj się </button>
+					<button type="submit" class="btn text-nowrap btn-secondary"> Zaloguj się </button>
 					<a href="/auth/register" class="btn text-nowrap btn-neutral"> Zarejestruj się </a>
 				</div>
 			</fieldset>

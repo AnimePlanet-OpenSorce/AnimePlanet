@@ -1,9 +1,9 @@
 import { user, userRole_Enum } from './index';
 import { relations } from 'drizzle-orm';
-import { pgTable, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, text } from 'drizzle-orm/pg-core';
 
 export const userGlobalRule = pgTable('user_global_rule', {
-	userId: uuid()
+	userId: text()
 		.primaryKey()
 		.references(() => user.id, { onUpdate: 'cascade' }),
 	role: userRole_Enum().notNull()

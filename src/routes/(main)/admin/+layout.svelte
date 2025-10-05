@@ -12,8 +12,9 @@
 	<div class="divider"></div>
 	<div class="flex h-full gap-4">
 		<Navbar.Menu>
-			<Navbar.Link href="/admin/groups">Grupy</Navbar.Link>
-			<Navbar.Link href="/admin/series">Series</Navbar.Link>
+			<Navbar.Link href="/admin/groups" pathnameReg={/\/admin\/groups/}>Grupy</Navbar.Link>
+			<Navbar.Link href="/admin/series" pathnameReg={/\/admin\/series/}>Series</Navbar.Link>
+			<!-- <Navbar.Link href="/admin/tags">Gatunki</Navbar.Link> -->
 		</Navbar.Menu>
 		<div class="flex w-full flex-col">
 			{@render children()}

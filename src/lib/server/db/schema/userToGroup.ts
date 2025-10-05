@@ -1,11 +1,11 @@
 import { group, user, userRole_Enum } from './index';
 import { relations } from 'drizzle-orm';
-import { pgTable, primaryKey, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, primaryKey, text, uuid } from 'drizzle-orm/pg-core';
 
 export const userToGroup = pgTable(
 	'user_to_group',
 	{
-		userId: uuid()
+		userId: text()
 			.references(() => user.id, { onUpdate: 'cascade' })
 			.notNull(),
 		groupId: uuid()

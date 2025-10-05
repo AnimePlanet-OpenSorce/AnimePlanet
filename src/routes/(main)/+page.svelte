@@ -10,6 +10,6 @@
 	<Hero />
 
 	{#each { length: 10 }}
-		<SeriesList listName="Popular This Season" filters={{ year: ['2025'] }} />
+		<SeriesList listName="Popular This Season" />
 	{/each}
 </div>
